@@ -132,7 +132,7 @@ export default function VolunteerProfile() {
 
         {/* Header */}
         <div className="bg-white border-b border-gray-200 px-5 py-4 flex items-center justify-between">
-          <Logo size={38} />
+          <Logo height={38} />
           <span className="text-sm text-gray-400">Schweiz</span>
         </div>
 

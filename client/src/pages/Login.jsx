@@ -32,7 +32,7 @@ export default function Login() {
         style={{ background: '#f7f9f4' }}>
         <div className="max-w-sm text-center">
           <div className="flex justify-center mb-6">
-            <Logo size={90} />
+            <Logo height={90} />
           </div>
           <p className="text-gray-500 text-sm mt-2">Schweiz</p>
           <p className="text-gray-600 text-lg mt-6 leading-relaxed">
@@ -49,7 +49,7 @@ export default function Login() {
         <div className="w-full max-w-md">
           {/* Mobile logo */}
           <div className="md:hidden flex justify-center mb-8">
-            <Logo size={60} />
+            <Logo height={60} />
           </div>
 
           <div className="bg-white rounded-2xl shadow-lg p-8">
