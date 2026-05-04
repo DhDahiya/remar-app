@@ -1,23 +1,12 @@
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 
-const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 587,
-  secure: false,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-  connectionTimeout: 5000,
-  greetingTimeout: 5000,
-});
-
+const resend = new Resend(process.env.RESEND_API_KEY);
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3001';
 
 async function sendVerificationEmail(to, token) {
   const link = `${BASE_URL}/verify-email?token=${token}`;
-  await transporter.sendMail({
-    from: `"REMAR Schweiz" <${process.env.EMAIL_USER}>`,
+  await resend.emails.send({
+    from: 'REMAR Schweiz <onboarding@resend.dev>',
     to,
     subject: 'Verify your REMAR account',
     html: `
@@ -35,8 +24,8 @@ async function sendVerificationEmail(to, token) {
 
 async function sendPasswordResetEmail(to, token) {
   const link = `${BASE_URL}/reset-password?token=${token}`;
-  await transporter.sendMail({
-    from: `"REMAR Schweiz" <${process.env.EMAIL_USER}>`,
+  await resend.emails.send({
+    from: 'REMAR Schweiz <onboarding@resend.dev>',
     to,
     subject: 'Reset your REMAR password',
     html: `
