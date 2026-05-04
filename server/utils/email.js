@@ -1,11 +1,13 @@
 const { Resend } = require('resend');
 
+if (!process.env.RESEND_API_KEY) console.error('RESEND_API_KEY is not set');
 const resend = new Resend(process.env.RESEND_API_KEY);
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3001';
 
 async function sendVerificationEmail(to, token) {
   const link = `${BASE_URL}/verify-email?token=${token}`;
-  await resend.emails.send({
+  console.log(`Sending verification email to ${to}`);
+  const result = await resend.emails.send({
     from: 'REMAR Schweiz <onboarding@resend.dev>',
     to,
     subject: 'Verify your REMAR account',
@@ -20,6 +22,7 @@ async function sendVerificationEmail(to, token) {
       </div>
     `,
   });
+  console.log('Verification email result:', JSON.stringify(result));
 }
 
 async function sendPasswordResetEmail(to, token) {
