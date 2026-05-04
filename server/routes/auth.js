@@ -54,7 +54,7 @@ router.post('/resend-verification', async (req, res) => {
 
     const token = crypto.randomBytes(32).toString('hex');
     await db.query('UPDATE users SET verification_token = $1 WHERE id = $2', [token, user.id]);
-    await sendVerificationEmail(email, token);
+    sendVerificationEmail(email, token).catch(err => console.error('Email error:', err.message));
     res.json({ message: 'Verification email sent' });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -93,7 +93,7 @@ router.post('/forgot-password', async (req, res) => {
     const token = crypto.randomBytes(32).toString('hex');
     const expires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
     await db.query('UPDATE users SET reset_token = $1, reset_token_expires = $2 WHERE id = $3', [token, expires, user.id]);
-    await sendPasswordResetEmail(email, token);
+    sendPasswordResetEmail(email, token).catch(err => console.error('Email error:', err.message));
     res.json({ message: 'If that email is registered, a reset link has been sent' });
   } catch (err) {
     res.status(500).json({ error: err.message });
