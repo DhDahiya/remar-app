@@ -36,7 +36,9 @@ export default function Tasks() {
     <div className="min-h-screen bg-green-50 p-6">
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold remar-green">Volunteer Opportunities</h1>
+          <h1 className="text-2xl font-bold remar-green">
+            {user?.role === 'beneficiary' ? 'Available Tasks' : 'Volunteer Opportunities'}
+          </h1>
           {(user?.role === 'admin' || user?.role === 'beneficiary') && (
             <button onClick={() => setShowForm(!showForm)}
               className="bg-remar text-white px-4 py-2 rounded-lg font-semibold hover:bg-remar transition">
