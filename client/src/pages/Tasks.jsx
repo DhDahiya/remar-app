@@ -9,6 +9,8 @@ export default function Tasks() {
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ title: '', description: '', location: '', scheduled_date: '', duration_hours: '', required_skills: '' });
 
+  const [applications, setApplications] = useState([]);
+
   const load = async () => {
     const res = await api.get('/tasks');
     setTasks(res.data);
@@ -16,9 +18,22 @@ export default function Tasks() {
       const aRes = await api.get('/assignments/my');
       setMyAssignments(aRes.data);
     }
+    if (user?.role === 'beneficiary') {
+      const aRes = await api.get('/assignments/for-me');
+      setApplications(aRes.data);
+    }
   };
 
   useEffect(() => { load(); }, []);
+
+  const handleRespond = async (assignmentId, status) => {
+    try {
+      await api.put(`/assignments/${assignmentId}/respond`, { status });
+      load();
+    } catch (err) {
+      alert(err.response?.data?.error || 'Failed to respond');
+    }
+  };
 
   const handleApply = async (taskId) => {
     try {
@@ -93,6 +108,34 @@ export default function Tasks() {
                 </button>
               </div>
             </form>
+          </div>
+        )}
+
+        {user?.role === 'beneficiary' && applications.length > 0 && (
+          <div className="mb-6">
+            <h2 className="text-lg font-bold text-gray-800 mb-3">Volunteer Applications</h2>
+            <div className="space-y-3">
+              {applications.map(app => (
+                <div key={app.id} className="bg-white rounded-xl shadow p-4 flex items-center justify-between">
+                  <div>
+                    <p className="font-semibold text-gray-800">{app.volunteer_name}</p>
+                    <p className="text-sm text-gray-500">Applied for: {app.task_title}</p>
+                    {app.volunteer_phone && <p className="text-xs text-gray-400">{app.volunteer_phone}</p>}
+                  </div>
+                  <div className="flex gap-2">
+                    <button onClick={() => handleRespond(app.id, 'confirmed')}
+                      className="text-xs text-white px-3 py-1.5 rounded-full font-semibold"
+                      style={{ backgroundColor: '#579500' }}>
+                      Accept
+                    </button>
+                    <button onClick={() => handleRespond(app.id, 'cancelled')}
+                      className="text-xs text-white px-3 py-1.5 rounded-full font-semibold bg-red-500">
+                      Reject
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 

@@ -99,7 +99,52 @@ router.post('/', authenticate, requireRole('admin'), async (req, res) => {
   }
 });
 
-// Update assignment status
+// Beneficiary approves or rejects a volunteer application
+router.put('/:id/respond', authenticate, requireRole('beneficiary'), async (req, res) => {
+  const { status } = req.body; // 'confirmed' or 'cancelled'
+  if (!['confirmed', 'cancelled'].includes(status)) return res.status(400).json({ error: 'Invalid status' });
+  try {
+    // Ensure the task belongs to this beneficiary
+    const check = await db.query(
+      `SELECT a.id FROM assignments a
+       JOIN tasks t ON a.task_id = t.id
+       WHERE a.id = $1 AND t.created_by = $2`,
+      [req.params.id, req.user.id]
+    );
+    if (!check.rows[0]) return res.status(403).json({ error: 'Not authorized' });
+
+    const result = await db.query(
+      'UPDATE assignments SET status=$1, updated_at=NOW() WHERE id=$2 RETURNING *',
+      [status, req.params.id]
+    );
+    if (status === 'confirmed') {
+      await db.query("UPDATE tasks SET status='assigned' WHERE id=(SELECT task_id FROM assignments WHERE id=$1)", [req.params.id]);
+    }
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get pending applications for beneficiary's tasks
+router.get('/for-me', authenticate, requireRole('beneficiary'), async (req, res) => {
+  try {
+    const result = await db.query(
+      `SELECT a.*, t.title as task_title, v.name as volunteer_name, v.phone as volunteer_phone
+       FROM assignments a
+       JOIN tasks t ON a.task_id = t.id
+       JOIN volunteers v ON a.volunteer_id = v.id
+       WHERE t.created_by = $1 AND a.status = 'pending'
+       ORDER BY a.created_at DESC`,
+      [req.user.id]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Update assignment status (admin only)
 router.put('/:id', authenticate, requireRole('admin'), async (req, res) => {
   const { status, notes } = req.body;
   try {
