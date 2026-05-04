@@ -5,15 +5,29 @@ import { useAuth } from '../context/AuthContext';
 export default function Tasks() {
   const { user } = useAuth();
   const [tasks, setTasks] = useState([]);
+  const [myAssignments, setMyAssignments] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ title: '', description: '', location: '', scheduled_date: '', duration_hours: '', required_skills: '' });
 
   const load = async () => {
     const res = await api.get('/tasks');
     setTasks(res.data);
+    if (user?.role === 'volunteer') {
+      const aRes = await api.get('/assignments/my');
+      setMyAssignments(aRes.data);
+    }
   };
 
   useEffect(() => { load(); }, []);
+
+  const handleApply = async (taskId) => {
+    try {
+      await api.post('/assignments/apply', { task_id: taskId });
+      load();
+    } catch (err) {
+      alert(err.response?.data?.error || 'Failed to apply');
+    }
+  };
 
   const handleCreate = async (e) => {
     e.preventDefault();
@@ -115,6 +129,20 @@ export default function Tasks() {
                       Mark complete
                     </button>
                   )}
+                  {user?.role === 'volunteer' && task.status === 'open' && (() => {
+                    const applied = myAssignments.find(a => a.task_id === task.id);
+                    return applied ? (
+                      <span className="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-700">
+                        {applied.status === 'pending' ? 'Applied' : applied.status}
+                      </span>
+                    ) : (
+                      <button onClick={() => handleApply(task.id)}
+                        className="text-xs text-white px-3 py-1 rounded-full font-semibold"
+                        style={{ backgroundColor: '#579500' }}>
+                        Apply
+                      </button>
+                    );
+                  })()}
                 </div>
               </div>
             </div>

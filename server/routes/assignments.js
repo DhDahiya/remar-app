@@ -30,6 +30,48 @@ router.get('/', authenticate, requireRole('admin'), async (req, res) => {
   }
 });
 
+// Volunteer applies for a task
+router.post('/apply', authenticate, requireRole('volunteer'), async (req, res) => {
+  const { task_id } = req.body;
+  try {
+    const volResult = await db.query('SELECT id FROM volunteers WHERE user_id = $1', [req.user.id]);
+    if (!volResult.rows[0]) return res.status(400).json({ error: 'Volunteer profile not found' });
+    const volunteer_id = volResult.rows[0].id;
+
+    const taskResult = await db.query('SELECT status FROM tasks WHERE id = $1', [task_id]);
+    if (!taskResult.rows[0]) return res.status(404).json({ error: 'Task not found' });
+    if (taskResult.rows[0].status !== 'open') return res.status(400).json({ error: 'Task is not open for applications' });
+
+    const existing = await db.query('SELECT id FROM assignments WHERE task_id = $1 AND volunteer_id = $2', [task_id, volunteer_id]);
+    if (existing.rows[0]) return res.status(400).json({ error: 'Already applied for this task' });
+
+    const result = await db.query(
+      `INSERT INTO assignments (task_id, volunteer_id, assigned_by, status) VALUES ($1,$2,$3,'pending') RETURNING *`,
+      [task_id, volunteer_id, req.user.id]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get current volunteer's assignments
+router.get('/my', authenticate, requireRole('volunteer'), async (req, res) => {
+  try {
+    const volResult = await db.query('SELECT id FROM volunteers WHERE user_id = $1', [req.user.id]);
+    if (!volResult.rows[0]) return res.json([]);
+    const result = await db.query(
+      `SELECT a.*, t.title as task_title, t.location, t.scheduled_date
+       FROM assignments a JOIN tasks t ON a.task_id = t.id
+       WHERE a.volunteer_id = $1 ORDER BY a.created_at DESC`,
+      [volResult.rows[0].id]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Create assignment (admin only)
 router.post('/', authenticate, requireRole('admin'), async (req, res) => {
   const { task_id, volunteer_id, beneficiary_id, notes } = req.body;
