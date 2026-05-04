@@ -1,10 +1,8 @@
 -- REMAR Database Schema
 
-CREATE EXTENSION IF NOT EXISTS IF NOT EXISTS "uuid-ossp";
-
 -- Users table (admins, volunteers, beneficiaries)
 CREATE TABLE IF NOT EXISTS users (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   email VARCHAR(255) UNIQUE NOT NULL,
   password_hash VARCHAR(255) NOT NULL,
   role VARCHAR(20) NOT NULL CHECK (role IN ('admin', 'volunteer', 'beneficiary')),
@@ -13,7 +11,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 -- Volunteers
 CREATE TABLE IF NOT EXISTS volunteers (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES users(id) ON DELETE CASCADE,
   name VARCHAR(255) NOT NULL,
   nickname VARCHAR(100),
@@ -34,7 +32,7 @@ CREATE TABLE IF NOT EXISTS volunteers (
 
 -- Beneficiaries
 CREATE TABLE IF NOT EXISTS beneficiaries (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES users(id) ON DELETE CASCADE,
   name VARCHAR(255) NOT NULL,
   nickname VARCHAR(100),
@@ -55,7 +53,7 @@ CREATE TABLE IF NOT EXISTS beneficiaries (
 
 -- Opportunities / Tasks
 CREATE TABLE IF NOT EXISTS tasks (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   title VARCHAR(255) NOT NULL,
   description TEXT,
   created_by UUID REFERENCES users(id),
@@ -70,7 +68,7 @@ CREATE TABLE IF NOT EXISTS tasks (
 
 -- Assignments
 CREATE TABLE IF NOT EXISTS assignments (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   task_id UUID REFERENCES tasks(id) ON DELETE CASCADE,
   volunteer_id UUID REFERENCES volunteers(id) ON DELETE CASCADE,
   beneficiary_id UUID REFERENCES beneficiaries(id),

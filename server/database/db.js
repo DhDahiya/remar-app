@@ -5,21 +5,22 @@ require('dotenv').config();
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.DATABASE_URL && process.env.DATABASE_URL.includes('render.com')
-    ? { rejectUnauthorized: false }
-    : false,
+  ssl: { rejectUnauthorized: false },
 });
 
 async function initDB() {
   const schema = fs.readFileSync(path.join(__dirname, 'schema.sql'), 'utf8');
-  try {
-    await pool.query(schema);
-    console.log('Database tables ready');
-  } catch (err) {
-    if (!err.message.includes('already exists')) {
-      console.error('DB init error:', err.message);
+  const statements = schema.split(';').map(s => s.trim()).filter(s => s.length > 0);
+  for (const statement of statements) {
+    try {
+      await pool.query(statement);
+    } catch (err) {
+      if (!err.message.includes('already exists')) {
+        console.error('DB init error:', err.message);
+      }
     }
   }
+  console.log('Database tables ready');
 }
 
 initDB();
