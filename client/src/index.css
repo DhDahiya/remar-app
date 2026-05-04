@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+:root {
+  --remar-green: #579500;
+  --remar-green-dark: #3d6a00;
+  --remar-green-light: #e8f5d0;
+  --remar-gray: #32373c;
+  --remar-gray-light: #abb8c3;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #32373c;
+}
+
+.btn-primary {
+  background-color: #579500;
+  color: white;
+  padding: 0.65rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+.btn-primary:hover { background-color: #3d6a00; }
+
+.remar-green { color: #579500; }
+.bg-remar { background-color: #579500; }
+.bg-remar-light { background-color: #e8f5d0; }
+.border-remar { border-color: #579500; }
+.ring-remar:focus { outline: none; box-shadow: 0 0 0 2px #579500; }
