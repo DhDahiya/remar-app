@@ -8,6 +8,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import Tasks from './pages/Tasks';
 import Assignments from './pages/Assignments';
 import VolunteerProfile from './pages/VolunteerProfile';
+import BeneficiaryProfile from './pages/BeneficiaryProfile';
 
 const ProtectedRoute = ({ children, roles }) => {
   const { user } = useAuth();
@@ -44,6 +45,9 @@ function AppRoutes() {
         } />
         <Route path="/volunteer/profile" element={
           <ProtectedRoute roles={['volunteer']}><VolunteerProfile /></ProtectedRoute>
+        } />
+        <Route path="/beneficiary/profile" element={
+          <ProtectedRoute roles={['beneficiary']}><BeneficiaryProfile /></ProtectedRoute>
         } />
       </Routes>
     </>
