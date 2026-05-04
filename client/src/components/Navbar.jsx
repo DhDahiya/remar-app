@@ -1,20 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-
-const REMARLogo = () => (
-  <Link to="/" className="flex items-center gap-2">
-    <div style={{ background: 'white', borderRadius: '50%', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <svg width="22" height="22" viewBox="0 0 40 40" fill="none">
-        <path d="M20 4C11.2 4 4 11.2 4 20s7.2 16 16 16 16-7.2 16-16S28.8 4 20 4z" fill="#579500"/>
-        <path d="M14 14h4l4 6 4-6h4l-6 9v7h-4v-7L14 14z" fill="white"/>
-      </svg>
-    </div>
-    <div className="leading-tight">
-      <span className="text-white font-bold text-lg tracking-wide">REMAR</span>
-      <span className="text-green-200 text-sm ml-1 font-light">Schweiz</span>
-    </div>
-  </Link>
-);
+import Logo from './Logo';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -25,39 +11,44 @@ export default function Navbar() {
     navigate('/login');
   };
 
+  const linkClass = "text-sm font-medium hover:text-green-700 transition" ;
+
   return (
-    <nav style={{ backgroundColor: '#579500' }} className="text-white px-6 py-3 flex items-center justify-between shadow-md">
-      <REMARLogo />
-      <div className="flex items-center gap-5 text-sm font-medium">
+    <nav className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between shadow-sm">
+      <Link to="/">
+        <Logo size={44} />
+      </Link>
+
+      <div className="flex items-center gap-5">
         {user?.role === 'admin' && (
           <>
-            <Link to="/dashboard" className="hover:text-green-200 transition">Dashboard</Link>
-            <Link to="/tasks" className="hover:text-green-200 transition">Tasks</Link>
-            <Link to="/assignments" className="hover:text-green-200 transition">Assignments</Link>
+            <Link to="/dashboard" className={linkClass} style={{ color: '#3a6b00' }}>Dashboard</Link>
+            <Link to="/tasks" className={linkClass} style={{ color: '#3a6b00' }}>Tasks</Link>
+            <Link to="/assignments" className={linkClass} style={{ color: '#3a6b00' }}>Assignments</Link>
           </>
         )}
         {user?.role === 'volunteer' && (
           <>
-            <Link to="/volunteer/profile" className="hover:text-green-200 transition">My Profile</Link>
-            <Link to="/tasks" className="hover:text-green-200 transition">Tasks</Link>
+            <Link to="/volunteer/profile" className={linkClass} style={{ color: '#3a6b00' }}>My Profile</Link>
+            <Link to="/tasks" className={linkClass} style={{ color: '#3a6b00' }}>Tasks</Link>
           </>
         )}
         {user?.role === 'beneficiary' && (
           <>
-            <Link to="/beneficiary/profile" className="hover:text-green-200 transition">My Profile</Link>
-            <Link to="/tasks" className="hover:text-green-200 transition">Tasks</Link>
+            <Link to="/beneficiary/profile" className={linkClass} style={{ color: '#3a6b00' }}>My Profile</Link>
+            <Link to="/tasks" className={linkClass} style={{ color: '#3a6b00' }}>Tasks</Link>
           </>
         )}
         {user ? (
           <button onClick={handleLogout}
-            className="bg-white font-semibold px-4 py-1.5 rounded transition hover:bg-green-100"
-            style={{ color: '#579500' }}>
+            className="text-sm font-semibold px-4 py-1.5 rounded transition"
+            style={{ backgroundColor: '#3a6b00', color: 'white' }}>
             Logout
           </button>
         ) : (
           <Link to="/login"
-            className="bg-white font-semibold px-4 py-1.5 rounded transition hover:bg-green-100"
-            style={{ color: '#579500' }}>
+            className="text-sm font-semibold px-4 py-1.5 rounded transition"
+            style={{ backgroundColor: '#3a6b00', color: 'white' }}>
             Login
           </Link>
         )}
