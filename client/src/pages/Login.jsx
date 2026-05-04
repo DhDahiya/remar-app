@@ -80,6 +80,11 @@ export default function Login() {
                   className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2"
                   placeholder="••••••••" />
               </div>
+              <div className="text-right">
+                <Link to="/forgot-password" className="text-xs hover:underline" style={{ color: '#579500' }}>
+                  Forgot password?
+                </Link>
+              </div>
               <button type="submit"
                 className="w-full text-white py-3 rounded-lg font-semibold text-sm transition hover:opacity-90"
                 style={{ backgroundColor: '#579500' }}>

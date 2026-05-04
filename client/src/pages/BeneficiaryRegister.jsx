@@ -29,13 +29,14 @@ export default function BeneficiaryRegister() {
     setError('');
     try {
       const authRes = await api.post('/auth/register', { ...auth, role: 'beneficiary' });
-      const { user: userData, token } = authRes.data;
-      login(userData, token);
+      const { token } = authRes.data;
+
       await api.post('/beneficiaries', {
         ...profile,
         time_preferences: { slots: profile.time_preferences }
       }, { headers: { Authorization: `Bearer ${token}` } });
-      navigate('/tasks');
+
+      navigate('/verify-email');
     } catch (err) {
       setError(err.response?.data?.error || 'Registration failed');
     }

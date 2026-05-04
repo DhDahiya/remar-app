@@ -36,18 +36,15 @@ export default function VolunteerRegister() {
     e.preventDefault();
     setError('');
     try {
-      // Register user account
       const authRes = await api.post('/auth/register', { ...auth, role: 'volunteer' });
-      const { user: userData, token } = authRes.data;
-      login(userData, token);
+      const { token } = authRes.data;
 
-      // Create volunteer profile with token explicitly
       await api.post('/volunteers', {
         ...profile,
         availability: { days: profile.availability }
       }, { headers: { Authorization: `Bearer ${token}` } });
 
-      navigate('/tasks');
+      navigate('/verify-email');
     } catch (err) {
       setError(err.response?.data?.error || 'Registration failed');
     }

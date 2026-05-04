@@ -9,6 +9,9 @@ import Tasks from './pages/Tasks';
 import Assignments from './pages/Assignments';
 import VolunteerProfile from './pages/VolunteerProfile';
 import BeneficiaryProfile from './pages/BeneficiaryProfile';
+import VerifyEmail from './pages/VerifyEmail';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
 const ProtectedRoute = ({ children, roles }) => {
   const { user } = useAuth();
@@ -49,6 +52,9 @@ function AppRoutes() {
         <Route path="/beneficiary/profile" element={
           <ProtectedRoute roles={['beneficiary']}><BeneficiaryProfile /></ProtectedRoute>
         } />
+        <Route path="/verify-email" element={<VerifyEmail />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
       </Routes>
     </>
   );
